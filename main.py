@@ -13,6 +13,12 @@ from helper import testing_entries
 
 def main():
     """ Main function... (duh) """
+    # Definitely need to fix this desc and formatting
+    parser = argparse.ArgumentParser(description="Testing some code")
+    parser.add_argument("--show",default=1,metavar="N",dest="show",help="Display N number of messages")
+    parser.add_argument("--add",dest="add",action="store_true",help="Add RSS subscriptions to .rmotd_feeds")
+    args = parser.parse_args()
+
     db_file = "rmotd_feeds.db"
     if not os.path.exists(db_file):
         print("Running setup script...")
@@ -20,9 +26,16 @@ def main():
         setup.store_subs()
         print("Database now exists!")
 
+    # Add new subscription if user passes `--add`
+    if args.add:
+        setup.store_subs()
+
     populate.push_to_db(db_file)
     # testing_entries(db_file)
-    display.display_entry(db_file)
+
+    # Could maybe make this faster w/out using a for loop
+    for x in range(int(args.show)):
+        display.display_entry(db_file)
 
     # Add function to append entries to rss feeds file
 
