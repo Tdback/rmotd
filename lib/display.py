@@ -1,4 +1,6 @@
-# Displays a message when user runs `rmotd` or on terminal startup
+"""
+Displays a message when user runs `rmotd` or on terminal startup
+"""
 
 # Import necessary libs...
 import sqlite3
@@ -21,8 +23,16 @@ def display_entry(db_file):
     # Get a random entry
     entry = all_unread_entries[randint(0,len(all_unread_entries))-1]
 
-    # TODO: Improve UI in terminal output
-    print("Title: {}\n\n{}\n{}".format(entry[0],entry[1][:200] + "...",entry[2]))
+    # If no desc, just print out title and link
+    if entry[1] == "":
+        print(f"Title: {entry[0]}\n\n"
+              f"Read more here:\n{entry[2]}\n")
+    else:
+        # Have to use hacky `chr(10)` to truncate description since f-strings can't
+        # include a backslash... for some f'ing reason
+        print(f"Title: {entry[0]}\n\n"
+              f"{entry[1][:entry[1].find(chr(10))]}\n\n"
+              f"Read more here:\n{entry[2]}\n")
 
     # Mark entry as read
     cur.execute("""
@@ -30,8 +40,7 @@ def display_entry(db_file):
     SET read = 1
     WHERE title = (?)
     """,
-                (entry[0],)
-                )
+                (entry[0],))
 
     conn.commit()
     conn.close()
