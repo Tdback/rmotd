@@ -1,7 +1,108 @@
 * Welcome to rmotd!
+** What is it?
 
-It is currently 3am and I am ready for bed, but I couldn't commit without a README!
+=rmotd= stands for "RSS Message of the Day", but since that takes too long to say, and frankly even longer to type, we just call it rmotd for short.
 
-This is a WIP, so please take all code with a grain of salt as it has currently been written in one sitting on a Friday night.
+=rmotd= was created out of our love for RSS feeds and the terminal. Our main goal was to provide a terminal utility that allows a user to stay up-to-date on all of their feeds, or subscriptions as we call them in this program, without having to leave the comfort of their terminal or having to install another third-party application or deal with pesky browsers. =rmotd= stays out of your way, and can be integrated directly into your shell to show you entries each time a new terminal is opened! If you prefer an even less obtrusive approach, running the command =rmotd= with a variety of arguments allows the user to customize their RSS feed reading experience to suit their own needs and taste.
 
-This will be updated, but to those who are looking back through the update logs, hello!
+=rmotd= is currently being developed for Unix and Linux-based systems (did we mention that one of the core devs uses Arch BTW?), but we are considering writing a compatible version for Windows in the future, or even shipping it as a Docker container!
+
+** What does it do?
+
+Well for now, it doesn't do much. But hopefully (if I actually start working on it more in my free time and stop trying to automate everything with Ansible and Docker - Tdback) it'll be a complete replacement for any other RSS feed reader that you've tried in the past. And if it isn't a complete replacement, that's fine too. It's a terminal application after all, and we don't include pretty colors and moving text unless you configured your terminal to do so. But let's be honest, nothing beats a scrolling wall of text that makes you look (and feel) like a "hacker". Anyways, back on to the documentation.
+
+=rmotd= works by either being called manually or by configuring it to launch on terminal startup. When launched, =rmotd= will display a single random entry from your list of RSS feed entries, displaying the title, a truncated description, and a link to the post (assuming each of the fields were given) if the user would like to read more about it.
+
+Here's what is happening behind the scenes. After =rmotd= is called, it will first read all of the URLs from your subscription file (which is created the first time you run the command or if you pass the arguments =--add= or =--setup=) and then go out to those sites and pull down a list of existing feed entries. It will populate a sqlite database with these entries, leaving a time stamp so the command can clean up the entry after it is read and older than a specified amount of time (see =--age= in the help page for more information). A common issue we faced early on was the challenge of aboiding populating the database with duplicate entries if a user ran the program more than once in a day. Seem as how running the program multiple times is a core feature of the program, this aspect was a key focus in early development. When populating the database, the program is smart enough to check if the entry already exists, and skips over inserting any entries that have already been added. After that, the program displays a random entry (or entries) in your terminal, giving you the title, a truncated description, and a direct link to that post if you wanted to read more about it. The displayed entries are then marked as 'read' in the database, and the program iterates through all read entries and removes those that are older than a specified age (in days). 
+
+** Installation
+
+In its current state, =rmotd= is only available for download via =git clone=.
+
+#+begin_src shell
+
+  git clone https://github.com/Tdback/rmotd
+  
+#+end_src
+
+Running the above command in your terminal of choice will clone the project into your current directory for you to tinker with, break, or improve to meet your own needs!
+
+** Available Arguments
+*** Existing Arguments
+
+Here is a list of arguments that are currently available to use when calling =rmotd=. These can also be found by running =rmotd --help:=
+
+=--show <I>=: Display =<I>= number of RSS entries where =<I>= is an integer. The default is 1.
+
+The following would display 3 RSS entries to the terminal:
+#+begin_src shell
+
+    $ rmotd --show 3
+      Title: ...
+
+      ...
+
+      Read more here:
+      ...
+
+#+end_src
+
+=--add=: Add an RSS URL (or URLs) to the subscriptions file, located in .rmotd_feeds
+
+An example of adding a new RSS feed from =rmotd= to read entries from:
+#+begin_src shell
+
+  $ rmotd --add
+    [MSG] Please enter a valid RSS feed URL.
+    [MSG] When done, press [ENTER|RETURN] to submit or quit: archlinux.org/feeds/news
+
+    [MSG] Please enter a valid RSS feed URL.
+    [MSG] When done, press [ENTER|RETURN] to submit or quit:
+    [MSG] Press [ENTER|RETURN] again to quit...
+
+#+end_src
+
+=--setup=: Similar functionality to =--clean=. Deletes and re-creates the database but also creates the subscriptions file. Shoud only be run if the subscriptions file does not already exist.
+
+#+begin_src shell
+
+  $ rmotd --setup
+    [MSG] Running setup script...
+    [MSG] Creating new database...
+    [MSG] Created database successfully...
+    [MSG] Please enter a valid RSS feed URL.
+    [MSG] When done, press [ENTER|RETURN] to submit or quit: ...
+
+#+end_src
+
+*** Arguments to be Implemented
+
+=--age <I>=: Remove all RSS entries marked 'read' from the database that are older than =<I>= day(s) old where =<I>= is an integer. The default is 3.
+
+The following would remove all RSS entries marked 'read' from the database that were added the previous day:
+#+begin_src shell
+
+  $ rmotd --age 1
+    [MSG] Removing entries older than 1 day(s) old...
+    [MSG] Entries removed!
+
+#+end_src
+
+=--clean=: Removes ALL RSS entries from the database, including entries marked 'unread'. In other words, it deletes and re-creates the database. 
+
+#+begin_src shell
+
+  $ rmotd --clean
+    [MSG] Are you sure you would like to delete ALL entries from your database [y/n]: y
+    [MSG] Deleting database...
+    [MSG] Creating new database...
+    [MSG] Database created successfully!
+
+#+end_src
+
+** Additional Help
+
+If you run into an issue, do not hesitate to put make open an issue!
+
+If you are interested in contributing to the project, feel free to reach out to Tdback via email: tylerdback.etc@proton.me
+
