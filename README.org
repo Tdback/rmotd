@@ -21,8 +21,9 @@ In its current state, =rmotd= is only available for download via =git clone=.
 
 #+begin_src shell
 
-  git clone https://github.com/Tdback/rmotd
-  
+  $ git clone https://github.com/Tdback/rmotd
+  $ cd rmotd && chmod +x rmotd.py
+
 #+end_src
 
 Running the above command in your terminal of choice will clone the project into your current directory for you to tinker with, break, or improve to meet your own needs!
@@ -102,7 +103,7 @@ The following would remove all RSS entries marked 'read' from the database that 
 
 ** Additional Help
 
-If you run into an issue, do not hesitate to put make open an issue!
+If you run into an issue, do not hesitate to open an issue!
 
 If you are interested in contributing to the project, feel free to reach out to Tdback via email: tylerdback.etc@proton.me
 
