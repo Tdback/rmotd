@@ -1,4 +1,6 @@
-# Creates database and RSS subscriptions file
+"""
+Creates database and RSS subscriptions file
+"""
 
 import sqlite3
 import os
@@ -7,6 +9,11 @@ def init_db(db_file):
     """ Creates database """
     conn = sqlite3.connect(db_file)
     cur = conn.cursor()
+
+    print("[MSG] Creating new database...")
+
+    # Delete existing table (used with --clean arg)
+    cur.execute("DROP TABLE IF EXISTS rmotdEntries")
 
     cur.execute("""
     CREATE TABLE rmotdEntries (
@@ -18,6 +25,8 @@ def init_db(db_file):
         year NUMERIC
     )
     """)
+
+    print("[MSG] Database created successfully!\n")
 
     conn.commit()
     conn.close()
@@ -35,23 +44,25 @@ def store_subs():
             subs.append(existing_sub)
 
     while True:
-        enter_sub = input("Please enter an RSS feed. When done, press [ENTER|RETURN] to submit or quit: ") + "\n"
+        enter_sub = input("[MSG] Please enter a valid RSS feed URL.\n"
+                          "[MSG] When done, press [ENTER|RETURN] to submit or quit: ") + "\n"
         if enter_sub.strip("\n") == "":
-            confirm_done = input("Press [ENTER|RETURN] again to quit...")
-            if confirm_done.lower() == "":
+            confirm_done = input("[MSG] Press [ENTER|RETURN] again to quit...")
+            if confirm_done.strip("\n") == "":
                 break
             continue
         # Check if valid RSS feed. Make function for better parsing?
         if "rss" not in enter_sub.lower() and "feed" not in enter_sub.lower():
-            print("Please enter a valid RSS feed.")
+            print("\n[ERR] Invalid RSS feed URL...\n")
             continue
         else:
             subs.append("https://" + enter_sub)
+            print() # Adds in a break in between messages for readability
 
     # Check if user input anything 
     if len(subs) == 0:
-        print("[WARNING] No input from user!")
+        print("\n[ERR] No input from user!")
     else:
         with open(feeds_file, "w", encoding="utf-8") as f:
             f.writelines(subs)
-        print("RSS feeds file `{}` uptdated successfully...".format(feeds_file))
+        print(f"\n[MSG] RSS feeds file `{feeds_file}` uptdated successfully...\n")
