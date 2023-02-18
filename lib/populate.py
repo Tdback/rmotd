@@ -1,4 +1,6 @@
-# Fetches entries from RSS subscriptions and populates database
+"""
+Fetches entries from RSS subscriptions and populates database
+"""
 
 # Import necessary libs...
 from sys import exit
@@ -14,10 +16,10 @@ def push_to_db(db_file):
     try:
         with open(".rmotd_feeds", "r", encoding="utf-8") as f:
             feeds = f.readlines()
+
     except FileNotFoundError:
-        print("[ERROR] - No feeds file found!\n"\
-              "Try running `rmotd --setup` to create a feeds file..."
-              )
+        print("[ERR] No subscriptions file found!\n"
+              "[MSG] Try running `rmotd --setup` or `rmotd --add` to create a subscriptions file...\n")
         exit()
 
     entry_grabber(feeds, db_file)
@@ -37,8 +39,7 @@ def entry_grabber(feeds, db_file):
     SELECT title from rmotdEntries
     WHERE day = (?) and year = (?)
     """,
-                (current_time[0], current_time[1])
-                )
+                (current_time[0], current_time[1]))
     existing_entries = [row[0] for row in cur.fetchall()]
 
     # Could probably make this faster
@@ -51,8 +52,7 @@ def entry_grabber(feeds, db_file):
                 VALUES (?, ?, ?, ?, ?, ?)
                 """,
                             (entry.title, sanitize(entry.description), entry.link,
-                             0, current_time[0], current_time[1])
-                            )
+                             0, current_time[0], current_time[1]))
 
     conn.commit()
     conn.close()
