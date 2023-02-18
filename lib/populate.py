@@ -32,14 +32,14 @@ def entry_grabber(feeds, db_file):
     conn = sqlite3.connect(db_file)
     cur = conn.cursor()
 
-    current_time = get_current_date()
+    curr_day, curr_year = get_current_date()
 
     # Get a list of existing entries
     cur.execute("""
     SELECT title from rmotdEntries
     WHERE day = (?) and year = (?)
     """,
-                (current_time[0], current_time[1]))
+                (curr_day, curr_year))
     existing_entries = [row[0] for row in cur.fetchall()]
 
     # Could probably make this faster
@@ -52,7 +52,7 @@ def entry_grabber(feeds, db_file):
                 VALUES (?, ?, ?, ?, ?, ?)
                 """,
                             (entry.title, sanitize(entry.description), entry.link,
-                             0, current_time[0], current_time[1]))
+                             0, curr_day, curr_year))
 
     conn.commit()
     conn.close()
