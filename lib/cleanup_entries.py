@@ -15,7 +15,7 @@ def get_age_of_entry(day, year):
     else:
         return abs(day - curr[0])
 
-def rem_entries_from_db(db_file, entry_age=2):
+def rem_entries_from_db(db_file, entry_age=3):
     """ Checks age of read entries and removes `old` entries from db """
     conn = sqlite3.connect(db_file)
     cur = conn.cursor()
