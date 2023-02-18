@@ -4,11 +4,11 @@ from sys import exit
 import argparse
 
 # Import necessary files...
-import setup
-import populate
-import cleanup_entries
-import display
-from helper import testing_entries
+from lib import setup
+from lib import populate
+from lib import cleanup_entries
+from lib import display
+from lib.helper import testing_entries
 
 
 def main():
