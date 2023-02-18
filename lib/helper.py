@@ -1,5 +1,7 @@
-# An assortment of helper functions to use
-# throughout the program
+"""
+An assortment of helper functions to use
+throughout the program
+"""
 
 # Import necessary libs...
 from datetime import datetime, date
