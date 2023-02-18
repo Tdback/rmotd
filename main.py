@@ -14,17 +14,20 @@ from lib.helper import testing_entries
 def main():
     """ Main function... (duh) """
     # Definitely need to fix this desc and formatting
-    parser = argparse.ArgumentParser(description="Testing some code")
-    parser.add_argument("--show",default=1,metavar="N",dest="show",help="Display N number of messages")
-    parser.add_argument("--add",dest="add",action="store_true",help="Add RSS subscriptions to .rmotd_feeds")
+    parser = argparse.ArgumentParser(description="The terminal RSS Feed Viewer!")
+    parser.add_argument("--show",default=1,metavar="<I>",dest="show",
+                        help="Display <I> number of RSS entries where <I> is an integer. The default is 1.")
+    parser.add_argument("--add",dest="add",action="store_true",
+                        help="Add an RSS URL (or URLs) to the subscriptions file, located in .rmotd_feeds")
+    parser.add_argument("--setup",dest="setup",action="store_true",
+                        help="Similar functionality to --clean. Deletes and re-creates the database but also creates the subscriptions file. Shoud only be run if the subscriptions file does not already exist.")
     args = parser.parse_args()
 
     db_file = "rmotd_feeds.db"
-    if not os.path.exists(db_file):
-        print("Running setup script...")
+    if not os.path.exists(db_file) or args.setup:
+        print("[MSG] Running setup script...")
         setup.init_db(db_file)
         setup.store_subs()
-        print("Database now exists!")
 
     # Add new subscription if user passes `--add`
     if args.add:
@@ -37,18 +40,10 @@ def main():
     for x in range(int(args.show)):
         display.display_entry(db_file)
 
-    # Add function to append entries to rss feeds file
-
     # Add a check for if no input from user, maybe don't create a db file
 
-    # Actually, move the feed adding to another separate function for
-    # when user runs --add to add another RSS subscription
-
-    # Nevermind, that already happens lol. Just call store_subs() when
-    # user runs --add to accomplish above
-
     # When calling this with `--age`, add argparse to pass in how age
-    # for removing entries. The current default is 2
+    # for removing entries. The current default is 3
     # Add warning that `0` is NOT recommended
     cleanup_entries.rem_entries_from_db(db_file)
     exit()
