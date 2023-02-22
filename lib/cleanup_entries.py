@@ -1,19 +1,16 @@
 # Used to clean up old entries in rmotd_feed.db
 
-# Import necessary libs...
+# Import database api
 import sqlite3
 
-# Import necessary files...
+# Import helper function to calculate date
 from lib.helper import get_current_date
 
 
 def get_age_of_entry(day, year):
     """ Returns age of entry (in days) """
     curr_day, curr_year = get_current_date()
-    if year < curr_year:
-        return abs(day - (365 * (curr_year - year))) + curr_day
-    else:
-        return abs(day - curr_day)
+    return abs(day - (365 * (curr_year - year))) + curr_day if (year < curr_year) else abs(day - curr_day)
 
 def rem_entries_from_db(db_file, entry_age=3):
     """ Checks age of read entries and removes `old` entries from db """
